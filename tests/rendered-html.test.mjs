@@ -36,10 +36,21 @@ test("server-renders Jarlath and Anya's Times Table Turbo", async () => {
 });
 
 test("includes the touch game, live rooms, install metadata and Pages build", async () => {
-  const [page, multiplayer, core, firebase, css, manifest, sw, docsFiles] =
+  const [
+    page,
+    multiplayer,
+    corrections,
+    core,
+    firebase,
+    css,
+    manifest,
+    sw,
+    docsFiles,
+  ] =
     await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/MultiplayerGame.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/CorrectionsReview.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/multiplayer-core.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/firebase.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
@@ -61,10 +72,16 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.match(page, /Team Turbo/);
   assert.match(page, /Join Room/);
   assert.match(page, /MultiplayerGame/);
+  assert.match(page, /recordMistake/);
+  assert.match(page, /correctionsRequired/);
   assert.match(multiplayer, /onValue/);
   assert.match(multiplayer, /runTransaction/);
   assert.match(multiplayer, /serverTimeOffset/);
   assert.match(multiplayer, /No accounts or chat/);
+  assert.match(multiplayer, /mistakeKey/);
+  assert.match(multiplayer, /CorrectionsReview/);
+  assert.match(corrections, /I’VE READ MY CORRECTIONS/);
+  assert.match(corrections, /missed \{mistake\.count\} times/);
   assert.match(core, /MULTIPLAYER_SECONDS = 60/);
   assert.match(core, /multiplayerQuestion/);
   assert.match(firebase, /signInAnonymously/);
@@ -76,7 +93,7 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   const parsedManifest = JSON.parse(manifest);
   assert.equal(parsedManifest.display, "standalone");
   assert.equal(parsedManifest.name, "Jarlath and Anya's Times Table Turbo");
-  assert.match(sw, /CACHE_NAME = "times-table-turbo-v3"/);
+  assert.match(sw, /CACHE_NAME = "times-table-turbo-v4"/);
   assert.match(sw, /requestUrl\.origin !== self\.location\.origin/);
   assert.ok(docsFiles.includes("index.html"));
   assert.ok(docsFiles.includes("manifest.webmanifest"));

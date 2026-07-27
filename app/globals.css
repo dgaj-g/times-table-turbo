@@ -92,6 +92,12 @@ button.wordmark {
   cursor: pointer;
 }
 
+button.wordmark:disabled,
+.home-button:disabled {
+  cursor: default;
+  opacity: 0.38;
+}
+
 .bolt {
   display: grid;
   width: 38px;
@@ -867,6 +873,142 @@ footer {
   background: rgba(255, 255, 255, 0.055);
 }
 
+.corrections-review {
+  margin: 0 0 24px;
+  padding: clamp(18px, 4vw, 26px);
+  border: 2px solid rgba(255, 212, 71, 0.55);
+  border-radius: 19px;
+  background:
+    linear-gradient(rgba(255, 212, 71, 0.08), rgba(255, 212, 71, 0.025)),
+    rgba(4, 7, 22, 0.32);
+  text-align: left;
+}
+
+.corrections-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.corrections-heading > span {
+  font-size: 2.15rem;
+}
+
+.corrections-heading h2 {
+  margin: 5px 0 0;
+  font-size: clamp(1.2rem, 4vw, 1.55rem);
+  letter-spacing: -0.045em;
+}
+
+.corrections-review > p {
+  margin: 15px 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.corrections-list {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 8px;
+  margin: 0 0 16px;
+  padding: 0;
+  list-style: none;
+}
+
+.corrections-list li {
+  display: grid;
+  min-height: 72px;
+  grid-template-columns: 1fr auto;
+  align-content: center;
+  align-items: center;
+  gap: 2px 9px;
+  padding: 12px 14px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 13px;
+  background: rgba(255, 255, 255, 0.055);
+  font-family: var(--font-geist-mono), monospace;
+}
+
+.corrections-list li > span {
+  color: var(--cream);
+  font-size: 1rem;
+  font-weight: 900;
+}
+
+.corrections-list li > strong {
+  color: var(--yellow);
+  font-size: 1.05rem;
+}
+
+.corrections-list li > small {
+  grid-column: 1 / -1;
+  color: var(--coral);
+  font-size: 0.62rem;
+}
+
+.confirm-corrections {
+  display: flex;
+  width: 100%;
+  min-height: 62px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  border: 2px solid var(--yellow);
+  border-radius: 14px;
+  background: var(--yellow);
+  box-shadow: inset 0 -5px 0 #b98900;
+  color: var(--ink);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.75rem;
+  font-weight: 950;
+}
+
+.confirm-corrections > span {
+  font-size: 1.25rem;
+}
+
+.confirm-corrections.confirmed {
+  border-color: #4ce08a;
+  background: #4ce08a;
+  box-shadow: inset 0 -5px 0 #228d56;
+}
+
+.perfect-review {
+  display: flex;
+  min-height: 78px;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  margin: 0 0 24px;
+  padding: 14px;
+  border: 1px solid rgba(76, 224, 138, 0.45);
+  border-radius: 15px;
+  background: rgba(76, 224, 138, 0.08);
+  text-align: left;
+}
+
+.perfect-review > span {
+  font-size: 1.9rem;
+}
+
+.perfect-review strong,
+.perfect-review small {
+  display: block;
+}
+
+.perfect-review small {
+  margin-top: 3px;
+  color: var(--muted);
+}
+
+.review-lock-note {
+  margin: 13px 0 0;
+  color: var(--yellow);
+  font-size: 0.72rem;
+}
+
 .race-scoreboard > div.me {
   border-color: var(--cyan);
   background: rgba(32, 214, 231, 0.1);
@@ -1511,6 +1653,10 @@ footer {
   .result-card {
     padding: 26px 17px;
     border-radius: 20px;
+  }
+
+  .corrections-list {
+    grid-template-columns: 1fr;
   }
 }
 

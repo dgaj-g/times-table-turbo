@@ -1,6 +1,9 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import CorrectionsReview, {
+  type MistakeRecord,
+} from "./CorrectionsReview";
 import MultiplayerGame from "./MultiplayerGame";
 import type { MultiplayerMode } from "./multiplayer-core";
 
@@ -110,6 +113,8 @@ export default function Home() {
   const [soundOn, setSoundOn] = useState(true);
   const [newAwards, setNewAwards] = useState<string[]>([]);
   const [progress, setProgress] = useState<SavedProgress>(DEFAULT_PROGRESS);
+  const [mistakes, setMistakes] = useState<MistakeRecord[]>([]);
+  const [mistakesConfirmed, setMistakesConfirmed] = useState(false);
   const [multiplayerEntry, setMultiplayerEntry] =
     useState<MultiplayerEntry | null>(null);
   const questionStartedAt = useRef(Date.now());
@@ -279,6 +284,8 @@ export default function Home() {
     setMessage("Turbo on!");
     setLocked(false);
     setNewAwards([]);
+    setMistakes([]);
+    setMistakesConfirmed(false);
     setScreen("playing");
     playSound("start");
   }
@@ -322,6 +329,23 @@ export default function Home() {
     questionStartedAt.current = Date.now();
   }
 
+  function recordMistake(missedQuestion: Question) {
+    setMistakes((current) => {
+      const existing = current.find(
+        (mistake) =>
+          mistake.a === missedQuestion.a && mistake.b === missedQuestion.b,
+      );
+      if (existing) {
+        return current.map((mistake) =>
+          mistake.a === missedQuestion.a && mistake.b === missedQuestion.b
+            ? { ...mistake, count: mistake.count + 1 }
+            : mistake,
+        );
+      }
+      return [...current, { ...missedQuestion, count: 1 }];
+    });
+  }
+
   function submitAnswer() {
     if (!answer || locked || screen !== "playing") return;
     setLocked(true);
@@ -361,6 +385,7 @@ export default function Home() {
     }
 
     const nextLives = lives - 1;
+    recordMistake(question);
     setLives(nextLives);
     setCombo(0);
     setTimeLeft((current) => Math.max(0, current - 2));
@@ -553,12 +578,14 @@ export default function Home() {
 
   if (screen === "results") {
     const isNewBest = score > 0 && score >= progress.bestScore;
+    const correctionsRequired = mistakes.length > 0 && !mistakesConfirmed;
     return (
       <main className="home-shell results-shell">
         <header className="top-bar">
           <button
             type="button"
             className="wordmark"
+            disabled={correctionsRequired}
             onClick={() => setScreen("home")}
           >
             <span className="bolt" aria-hidden="true">
@@ -621,16 +648,36 @@ export default function Home() {
             </div>
           )}
 
-          <button type="button" className="primary-cta" onClick={startGame}>
+          <CorrectionsReview
+            mistakes={mistakes}
+            confirmed={mistakesConfirmed}
+            onConfirm={() => {
+              setMistakesConfirmed(true);
+              playSound("award");
+            }}
+          />
+
+          <button
+            type="button"
+            className="primary-cta"
+            onClick={startGame}
+            disabled={correctionsRequired}
+          >
             PLAY AGAIN <span aria-hidden="true">↻</span>
           </button>
           <button
             type="button"
             className="secondary-cta"
             onClick={() => setScreen("home")}
+            disabled={correctionsRequired}
           >
             CHANGE TABLES
           </button>
+          {correctionsRequired && (
+            <p className="review-lock-note">
+              Read and confirm the correction check to continue.
+            </p>
+          )}
         </section>
       </main>
     );

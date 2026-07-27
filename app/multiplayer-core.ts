@@ -2,6 +2,7 @@ export type PlayerName = "Jarlath" | "Anya";
 export type MultiplayerMode = "race" | "coop";
 export type RoomStatus = "waiting" | "playing" | "finished";
 export type Question = { a: number; b: number };
+export type MistakeRecord = Question & { count: number };
 
 export type PlayerState = {
   uid: string;
@@ -11,6 +12,7 @@ export type PlayerState = {
   combo: number;
   questionIndex: number;
   joinedAt: number;
+  mistakes?: Record<string, MistakeRecord>;
 };
 
 export type CoopState = {
@@ -21,6 +23,7 @@ export type CoopState = {
   lives: number;
   questionIndex: number;
   currentTurn: PlayerName;
+  mistakes?: Record<string, MistakeRecord>;
 };
 
 export type RoomState = {

@@ -11,6 +11,7 @@ import {
   set,
   update,
 } from "firebase/database";
+import CorrectionsReview from "./CorrectionsReview";
 import { getRealtimeServices } from "./firebase";
 import {
   makeRoomCode,
@@ -67,6 +68,7 @@ export default function MultiplayerGame({
   const [timeLeft, setTimeLeft] = useState(MULTIPLAYER_SECONDS);
   const [serverOffset, setServerOffset] = useState(0);
   const [currentUid, setCurrentUid] = useState("");
+  const [reviewConfirmed, setReviewConfirmed] = useState(false);
   const databaseRef = useRef<Awaited<
     ReturnType<typeof getRealtimeServices>
   >["database"] | null>(null);
@@ -104,6 +106,17 @@ export default function MultiplayerGame({
     room?.mode === "race" || room?.coop?.currentTurn === player;
   const gameLocked =
     busy || feedback !== "idle" || !myTurn || !connected || timeLeft <= 0;
+  const resultMistakes = useMemo(() => {
+    const records =
+      room?.mode === "coop" ? room.coop?.mistakes : myState?.mistakes;
+    return Object.values(records ?? {}).sort(
+      (left, right) => left.a - right.a || left.b - right.b,
+    );
+  }, [myState?.mistakes, room?.coop?.mistakes, room?.mode]);
+  const correctionsRequired =
+    activeStage === "results" &&
+    resultMistakes.length > 0 &&
+    !reviewConfirmed;
 
   useEffect(() => {
     return () => {
@@ -254,6 +267,7 @@ export default function MultiplayerGame({
       };
 
       await set(ref(services.database, `rooms/${code}`), initialRoom);
+      setReviewConfirmed(false);
       setRoomCode(code);
       await connectToRoom(code, player);
       setStage("lobby");
@@ -304,6 +318,7 @@ export default function MultiplayerGame({
         questionIndex: 0,
         joinedAt: Date.now(),
       });
+      setReviewConfirmed(false);
       setRoomCode(code);
       await connectToRoom(code, player);
       setStage("lobby");
@@ -326,6 +341,7 @@ export default function MultiplayerGame({
     setBusy(true);
     setError("");
     finishSent.current = false;
+    setReviewConfirmed(false);
     try {
       await update(ref(databaseRef.current, `rooms/${roomCode}`), {
         status: "playing",
@@ -344,6 +360,7 @@ export default function MultiplayerGame({
     setBusy(true);
     const isCorrect = Number(answer) === question.a * question.b;
     const answerText = `${question.a} × ${question.b} = ${question.a * question.b}`;
+    const mistakeKey = `${question.a}x${question.b}`;
 
     try {
       if (room.mode === "race") {
@@ -352,16 +369,30 @@ export default function MultiplayerGame({
           `rooms/${roomCode}/players/${player}`,
         );
         await runTransaction(playerPath, (current) => {
-          if (!current || current.uid !== uidRef.current) return;
-          const nextCombo = isCorrect ? current.combo + 1 : 0;
+          const state = current ?? room.players[player];
+          if (!state || state.uid !== uidRef.current) return;
+          const nextCombo = isCorrect ? state.combo + 1 : 0;
           return {
-            ...current,
+            ...state,
             score: isCorrect
-              ? current.score + 100 + Math.min(nextCombo * 15, 150)
-              : Math.max(0, current.score - 50),
-            correct: current.correct + (isCorrect ? 1 : 0),
+              ? state.score + 100 + Math.min(nextCombo * 15, 150)
+              : Math.max(0, state.score - 50),
+            correct: state.correct + (isCorrect ? 1 : 0),
             combo: nextCombo,
-            questionIndex: current.questionIndex + 1,
+            questionIndex: state.questionIndex + 1,
+            ...(isCorrect
+              ? {}
+              : {
+                  mistakes: {
+                    ...(state.mistakes ?? {}),
+                    [mistakeKey]: {
+                      a: question.a,
+                      b: question.b,
+                      count:
+                        (state.mistakes?.[mistakeKey]?.count ?? 0) + 1,
+                    },
+                  },
+                }),
           };
         });
       } else {
@@ -370,19 +401,33 @@ export default function MultiplayerGame({
           `rooms/${roomCode}/coop`,
         );
         await runTransaction(coopPath, (current) => {
-          if (!current || current.currentTurn !== player) return;
-          const nextCombo = isCorrect ? current.combo + 1 : 0;
+          const state = current ?? room.coop;
+          if (!state || state.currentTurn !== player) return;
+          const nextCombo = isCorrect ? state.combo + 1 : 0;
           return {
-            ...current,
+            ...state,
             score: isCorrect
-              ? current.score + 100 + Math.min(nextCombo * 15, 150)
-              : current.score,
-            correct: current.correct + (isCorrect ? 1 : 0),
-            attempts: current.attempts + 1,
+              ? state.score + 100 + Math.min(nextCombo * 15, 150)
+              : state.score,
+            correct: state.correct + (isCorrect ? 1 : 0),
+            attempts: state.attempts + 1,
             combo: nextCombo,
-            lives: isCorrect ? current.lives : Math.max(0, current.lives - 1),
-            questionIndex: current.questionIndex + 1,
+            lives: isCorrect ? state.lives : Math.max(0, state.lives - 1),
+            questionIndex: state.questionIndex + 1,
             currentTurn: otherPlayer(player),
+            ...(isCorrect
+              ? {}
+              : {
+                  mistakes: {
+                    ...(state.mistakes ?? {}),
+                    [mistakeKey]: {
+                      a: question.a,
+                      b: question.b,
+                      count:
+                        (state.mistakes?.[mistakeKey]?.count ?? 0) + 1,
+                    },
+                  },
+                }),
           };
         });
       }
@@ -460,6 +505,7 @@ export default function MultiplayerGame({
           type="button"
           className="home-button"
           onClick={leaveRoom}
+          disabled={correctionsRequired}
           aria-label="Leave this room and return to the home screen"
         >
           <span aria-hidden="true">←</span>
@@ -648,9 +694,30 @@ export default function MultiplayerGame({
               <p>{room?.coop?.correct ?? 0} answers solved together</p>
             </>
           )}
-          <button type="button" className="primary-cta" onClick={leaveRoom}>
+
+          <CorrectionsReview
+            mistakes={resultMistakes}
+            confirmed={reviewConfirmed}
+            ownerLabel={room?.mode === "coop" ? "Team" : player}
+            onConfirm={() => {
+              setReviewConfirmed(true);
+              playSound("award");
+            }}
+          />
+
+          <button
+            type="button"
+            className="primary-cta"
+            onClick={leaveRoom}
+            disabled={correctionsRequired}
+          >
             BACK HOME <span aria-hidden="true">→</span>
           </button>
+          {correctionsRequired && (
+            <p className="review-lock-note">
+              Read and confirm the correction check to continue.
+            </p>
+          )}
         </section>
       </main>
     );
