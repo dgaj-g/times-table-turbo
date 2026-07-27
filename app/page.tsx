@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 
 type Screen = "home" | "playing" | "results";
 type Feedback = "idle" | "correct" | "wrong";
+type SelectionMode = "multi" | "single";
 type Question = { a: number; b: number };
 
 type SavedProgress = {
@@ -86,6 +87,8 @@ function scoreStars(score: number) {
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("home");
   const [selectedTables, setSelectedTables] = useState(ALL_TABLES);
+  const [selectionMode, setSelectionMode] =
+    useState<SelectionMode>("multi");
   const [question, setQuestion] = useState<Question>({ a: 7, b: 8 });
   const [answer, setAnswer] = useState("");
   const [score, setScore] = useState(0);
@@ -104,6 +107,7 @@ export default function Home() {
   const [progress, setProgress] = useState<SavedProgress>(DEFAULT_PROGRESS);
   const questionStartedAt = useRef(Date.now());
   const audioContext = useRef<AudioContext | null>(null);
+  const roundActionTimer = useRef<number | null>(null);
   const finishing = useRef(false);
 
   const accuracy = attempts ? Math.round((correctCount / attempts) * 100) : 0;
@@ -111,6 +115,8 @@ export default function Home() {
   const tableLabel =
     selectedTables.length === 12
       ? "All 1–12"
+      : selectedTables.length === 1
+        ? `${selectedTables[0]} only`
       : selectedTables.slice().sort((a, b) => a - b).join(", ");
 
   const unlocked = useMemo(
@@ -215,8 +221,28 @@ export default function Home() {
     }
   }
 
-  function toggleTable(table: number) {
+  function clearRoundAction() {
+    if (roundActionTimer.current !== null) {
+      window.clearTimeout(roundActionTimer.current);
+      roundActionTimer.current = null;
+    }
+  }
+
+  function scheduleRoundAction(action: () => void, delay: number) {
+    clearRoundAction();
+    roundActionTimer.current = window.setTimeout(() => {
+      roundActionTimer.current = null;
+      action();
+    }, delay);
+  }
+
+  function chooseTable(table: number) {
     playSound("tap");
+    if (selectionMode === "single") {
+      setSelectedTables([table]);
+      return;
+    }
+
     setSelectedTables((current) => {
       if (current.includes(table)) {
         return current.length === 1
@@ -228,6 +254,7 @@ export default function Home() {
   }
 
   function startGame() {
+    clearRoundAction();
     finishing.current = false;
     const firstQuestion = makeQuestion(selectedTables);
     setQuestion(firstQuestion);
@@ -247,6 +274,17 @@ export default function Home() {
     setNewAwards([]);
     setScreen("playing");
     playSound("start");
+  }
+
+  function exitToHome() {
+    clearRoundAction();
+    finishing.current = true;
+    setLocked(true);
+    setAnswer("");
+    setFeedback("idle");
+    setMessage("Ready?");
+    setScreen("home");
+    playSound("tap");
   }
 
   function enterDigit(digit: string) {
@@ -304,7 +342,7 @@ export default function Home() {
       } else {
         playSound("correct");
       }
-      window.setTimeout(nextQuestion, 360);
+      scheduleRoundAction(nextQuestion, 360);
       return;
     }
 
@@ -317,15 +355,16 @@ export default function Home() {
     playSound("wrong");
 
     if (nextLives <= 0) {
-      window.setTimeout(finishRound, 900);
+      scheduleRoundAction(finishRound, 900);
     } else {
-      window.setTimeout(nextQuestion, 900);
+      scheduleRoundAction(nextQuestion, 900);
     }
   }
 
   function finishRound() {
     if (finishing.current) return;
     finishing.current = true;
+    clearRoundAction();
     setLocked(true);
 
     const roundAccuracy = attempts ? correctCount / attempts : 0;
@@ -371,17 +410,21 @@ export default function Home() {
     return (
       <main className={`game-shell feedback-${feedback}`}>
         <header className="game-header">
-          <button
-            type="button"
-            className="wordmark compact"
-            onClick={finishRound}
-            aria-label="End round and return home"
-          >
-            <span className="bolt" aria-hidden="true">
-              ⚡
-            </span>
-            TURBO
-          </button>
+          <div className="game-nav">
+            <button
+              type="button"
+              className="home-button"
+              onClick={exitToHome}
+              aria-label="End this round and return to the home screen"
+            >
+              <span aria-hidden="true">←</span>
+              HOME
+            </button>
+            <div className="wordmark compact" aria-hidden="true">
+              <span className="bolt">⚡</span>
+              TURBO
+            </div>
+          </div>
           <div className="hearts" aria-label={`${lives} lives remaining`}>
             {[0, 1, 2].map((heart) => (
               <span
@@ -619,11 +662,48 @@ export default function Home() {
             <button
               type="button"
               className="all-button"
-              onClick={() => setSelectedTables(ALL_TABLES)}
+              onClick={() => {
+                setSelectionMode("multi");
+                setSelectedTables(ALL_TABLES);
+                playSound("tap");
+              }}
             >
               ALL
             </button>
           </div>
+          <div
+            className="selection-mode"
+            role="group"
+            aria-label="How to choose times tables"
+          >
+            <button
+              type="button"
+              className={selectionMode === "multi" ? "active" : ""}
+              aria-pressed={selectionMode === "multi"}
+              onClick={() => {
+                setSelectionMode("multi");
+                playSound("tap");
+              }}
+            >
+              PICK SEVERAL
+            </button>
+            <button
+              type="button"
+              className={selectionMode === "single" ? "active" : ""}
+              aria-pressed={selectionMode === "single"}
+              onClick={() => {
+                setSelectionMode("single");
+                playSound("tap");
+              }}
+            >
+              FOCUS ONE
+            </button>
+          </div>
+          <p className="selection-hint">
+            {selectionMode === "single"
+              ? "Tap one number to practise only that table."
+              : "Tap tables to add or remove them."}
+          </p>
           <div className="table-picker" aria-label="Choose times tables">
             {ALL_TABLES.map((table) => {
               const active = selectedTables.includes(table);
@@ -633,7 +713,7 @@ export default function Home() {
                   type="button"
                   className={active ? "active" : ""}
                   aria-pressed={active}
-                  onClick={() => toggleTable(table)}
+                  onClick={() => chooseTable(table)}
                 >
                   {table}
                 </button>

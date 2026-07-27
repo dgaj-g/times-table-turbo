@@ -141,7 +141,9 @@ button.wordmark {
 
 .sound-button:active,
 .all-button:active,
+.selection-mode button:active,
 .table-picker button:active,
+.home-button:active,
 .secondary-cta:active {
   transform: translateY(2px);
 }
@@ -309,11 +311,48 @@ button.wordmark {
   font-weight: 900;
 }
 
+.selection-mode {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 8px;
+  margin-top: 24px;
+  padding: 5px;
+  border: 1px solid var(--line);
+  border-radius: 14px;
+  background: rgba(4, 7, 22, 0.3);
+}
+
+.selection-mode button {
+  min-height: 46px;
+  cursor: pointer;
+  border: 0;
+  border-radius: 10px;
+  background: transparent;
+  color: var(--muted);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.7rem;
+  font-weight: 900;
+  letter-spacing: 0.04em;
+}
+
+.selection-mode button.active {
+  background: var(--yellow);
+  box-shadow: inset 0 -4px 0 rgba(154, 104, 0, 0.28);
+  color: var(--ink);
+}
+
+.selection-hint {
+  min-height: 17px;
+  margin: 9px 3px 0;
+  color: var(--muted);
+  font-size: 0.74rem;
+}
+
 .table-picker {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 10px;
-  margin: 25px 0 18px;
+  margin: 14px 0 18px;
 }
 
 .table-picker button {
@@ -475,6 +514,34 @@ footer {
 
 .game-header {
   flex: 0 0 auto;
+}
+
+.game-nav {
+  display: flex;
+  align-items: center;
+  gap: 17px;
+}
+
+.home-button {
+  display: inline-flex;
+  min-width: 94px;
+  min-height: 48px;
+  cursor: pointer;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid rgba(32, 214, 231, 0.5);
+  border-radius: 14px;
+  background: rgba(32, 214, 231, 0.1);
+  color: var(--cyan);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.78rem;
+  font-weight: 950;
+}
+
+.home-button span {
+  font-size: 1.2rem;
+  line-height: 1;
 }
 
 .wordmark.compact {
@@ -870,6 +937,18 @@ footer {
 
   .wordmark {
     font-size: 0.8rem;
+  }
+
+  .game-nav {
+    gap: 8px;
+  }
+
+  .game-nav .wordmark {
+    display: none;
+  }
+
+  .home-button {
+    min-width: 86px;
   }
 
   .bolt {

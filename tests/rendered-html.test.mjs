@@ -45,6 +45,10 @@ test("includes the touch game, install metadata and static Pages build", async (
   ]);
 
   assert.match(page, /aria-label="Answer keypad"/);
+  assert.match(page, /FOCUS ONE/);
+  assert.match(page, /selectionMode === "single"/);
+  assert.match(page, /End this round and return to the home screen/);
+  assert.match(page, /function exitToHome\(\)/);
   assert.match(page, /Touch|made for tapping/i);
   assert.match(page, /serviceWorker/);
   assert.match(page, /ROUND_SECONDS = 60/);
@@ -56,7 +60,7 @@ test("includes the touch game, install metadata and static Pages build", async (
   const parsedManifest = JSON.parse(manifest);
   assert.equal(parsedManifest.display, "standalone");
   assert.equal(parsedManifest.name, "Times Table Turbo");
-  assert.match(sw, /CACHE_NAME = "times-table-turbo-v1"/);
+  assert.match(sw, /CACHE_NAME = "times-table-turbo-v2"/);
   assert.ok(docsFiles.includes("index.html"));
   assert.ok(docsFiles.includes("manifest.webmanifest"));
   assert.ok(docsFiles.includes("og.png"));
