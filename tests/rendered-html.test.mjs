@@ -82,6 +82,10 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.match(multiplayer, /CorrectionsReview/);
   assert.match(corrections, /I’VE READ MY CORRECTIONS/);
   assert.match(corrections, /missed \{mistake\.count\} times/);
+  assert.match(corrections, /TRY IT AGAIN/);
+  assert.match(corrections, /FINISH CORRECTION REVIEW/);
+  assert.match(corrections, /feedback === "wrong" \? correctAnswer/);
+  assert.match(corrections, /onComplete\(\)/);
   assert.match(core, /MULTIPLAYER_SECONDS = 60/);
   assert.match(core, /multiplayerQuestion/);
   assert.match(firebase, /signInAnonymously/);
@@ -93,7 +97,7 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   const parsedManifest = JSON.parse(manifest);
   assert.equal(parsedManifest.display, "standalone");
   assert.equal(parsedManifest.name, "Jarlath and Anya's Times Table Turbo");
-  assert.match(sw, /CACHE_NAME = "times-table-turbo-v4"/);
+  assert.match(sw, /CACHE_NAME = "times-table-turbo-v5"/);
   assert.match(sw, /requestUrl\.origin !== self\.location\.origin/);
   assert.ok(docsFiles.includes("index.html"));
   assert.ok(docsFiles.includes("manifest.webmanifest"));

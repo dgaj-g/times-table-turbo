@@ -650,8 +650,10 @@ export default function Home() {
 
           <CorrectionsReview
             mistakes={mistakes}
-            confirmed={mistakesConfirmed}
-            onConfirm={() => {
+            onAnswer={(correct) =>
+              playSound(correct ? "correct" : "wrong")
+            }
+            onComplete={() => {
               setMistakesConfirmed(true);
               playSound("award");
             }}
@@ -675,7 +677,7 @@ export default function Home() {
           </button>
           {correctionsRequired && (
             <p className="review-lock-note">
-              Read and confirm the correction check to continue.
+              Read the corrections, then complete the retry to continue.
             </p>
           )}
         </section>

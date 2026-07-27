@@ -12,7 +12,7 @@ A fast, touch-first times-tables game for Jarlath and Anya to practise the
 - optional arcade sound effects
 - live two-iPad Race mode with a shared countdown and realtime scores
 - turn-taking Team Turbo mode with shared hearts and a shared score
-- end-of-round correction checks that must be confirmed before continuing
+- compulsory end-of-round correction review and retry quiz
 - simple five-character room codes with no child accounts or chat
 - installable from Safari with **Add to Home Screen**
 - offline solo replay after the first visit

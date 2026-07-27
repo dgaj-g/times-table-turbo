@@ -697,9 +697,11 @@ export default function MultiplayerGame({
 
           <CorrectionsReview
             mistakes={resultMistakes}
-            confirmed={reviewConfirmed}
             ownerLabel={room?.mode === "coop" ? "Team" : player}
-            onConfirm={() => {
+            onAnswer={(correct) =>
+              playSound(correct ? "correct" : "wrong")
+            }
+            onComplete={() => {
               setReviewConfirmed(true);
               playSound("award");
             }}
@@ -715,7 +717,7 @@ export default function MultiplayerGame({
           </button>
           {correctionsRequired && (
             <p className="review-lock-note">
-              Read and confirm the correction check to continue.
+              Read the corrections, then complete the retry to continue.
             </p>
           )}
         </section>
