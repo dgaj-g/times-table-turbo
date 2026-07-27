@@ -1,0 +1,12 @@
+{
+  "name": "Times Table Turbo",
+  "short_name": "Table Turbo",
+  "description": "A 60-second times-tables challenge with combos and awards.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#11152b",
+  "theme_color": "#11152b",
+  "categories": ["education", "games", "kids"]
+}
