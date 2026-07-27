@@ -34,15 +34,15 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL(origin),
-    title: "Times Table Turbo — 60-Second Maths Mayhem",
+    title: "Jarlath and Anya’s Times Table Turbo",
     description:
-      "A fast, touch-friendly times-tables challenge with combos, awards and sound.",
-    applicationName: "Times Table Turbo",
+      "A touch-friendly times-tables game with solo, live Race and turn-taking Team Turbo modes.",
+    applicationName: "Jarlath and Anya’s Times Table Turbo",
     manifest: "/manifest.webmanifest",
     appleWebApp: {
       capable: true,
       statusBarStyle: "black-translucent",
-      title: "Table Turbo",
+      title: "Jarlath + Anya Turbo",
     },
     formatDetection: {
       telephone: false,
@@ -50,21 +50,21 @@ export async function generateMetadata(): Promise<Metadata> {
     openGraph: {
       type: "website",
       url: origin,
-      title: "Times Table Turbo",
-      description: "60 seconds. 12 tables. Go!",
+      title: "Jarlath and Anya’s Times Table Turbo",
+      description: "Play solo, race live, or solve times tables together.",
       images: [
         {
           url: `${origin}/og.png`,
           width: 1200,
           height: 630,
-          alt: "Times Table Turbo — 60 seconds, 12 tables, go!",
+          alt: "Jarlath and Anya’s Times Table Turbo",
         },
       ],
     },
     twitter: {
       card: "summary_large_image",
-      title: "Times Table Turbo",
-      description: "60 seconds. 12 tables. Go!",
+      title: "Jarlath and Anya’s Times Table Turbo",
+      description: "Play solo, race live, or solve times tables together.",
       images: [`${origin}/og.png`],
     },
   };

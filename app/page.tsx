@@ -1,11 +1,16 @@
 "use client";
 
 import { useEffect, useMemo, useRef, useState } from "react";
+import MultiplayerGame from "./MultiplayerGame";
+import type { MultiplayerMode } from "./multiplayer-core";
 
-type Screen = "home" | "playing" | "results";
+type Screen = "home" | "playing" | "results" | "multiplayer";
 type Feedback = "idle" | "correct" | "wrong";
 type SelectionMode = "multi" | "single";
 type Question = { a: number; b: number };
+type MultiplayerEntry =
+  | { kind: "host"; mode: MultiplayerMode }
+  | { kind: "join" };
 
 type SavedProgress = {
   bestScore: number;
@@ -105,6 +110,8 @@ export default function Home() {
   const [soundOn, setSoundOn] = useState(true);
   const [newAwards, setNewAwards] = useState<string[]>([]);
   const [progress, setProgress] = useState<SavedProgress>(DEFAULT_PROGRESS);
+  const [multiplayerEntry, setMultiplayerEntry] =
+    useState<MultiplayerEntry | null>(null);
   const questionStartedAt = useRef(Date.now());
   const audioContext = useRef<AudioContext | null>(null);
   const roundActionTimer = useRef<number | null>(null);
@@ -287,6 +294,13 @@ export default function Home() {
     playSound("tap");
   }
 
+  function openMultiplayer(entry: MultiplayerEntry) {
+    clearRoundAction();
+    setMultiplayerEntry(entry);
+    setScreen("multiplayer");
+    playSound("tap");
+  }
+
   function enterDigit(digit: string) {
     if (locked) return;
     playSound("tap");
@@ -405,6 +419,22 @@ export default function Home() {
       <span aria-hidden="true">{soundOn ? "🔊" : "🔇"}</span>
     </button>
   );
+
+  if (screen === "multiplayer" && multiplayerEntry) {
+    return (
+      <MultiplayerGame
+        entry={multiplayerEntry}
+        tables={selectedTables}
+        soundOn={soundOn}
+        onToggleSound={() => setSoundOn((current) => !current)}
+        onHome={() => {
+          setMultiplayerEntry(null);
+          setScreen("home");
+        }}
+        playSound={playSound}
+      />
+    );
+  }
 
   if (screen === "playing") {
     return (
@@ -534,7 +564,7 @@ export default function Home() {
             <span className="bolt" aria-hidden="true">
               ⚡
             </span>
-            TIMES TABLE TURBO
+            JARLATH AND ANYA’S TIMES TABLE TURBO
           </button>
           {soundButton}
         </header>
@@ -613,7 +643,7 @@ export default function Home() {
           <span className="bolt" aria-hidden="true">
             ⚡
           </span>
-          TIMES TABLE TURBO
+          JARLATH AND ANYA’S TIMES TABLE TURBO
         </div>
         <div className="header-actions">
           <div className="mini-stat" title="Stars earned">
@@ -626,6 +656,9 @@ export default function Home() {
       <section className="hero-grid">
         <div className="hero-copy">
           <div className="eyebrow">60-SECOND MATHS MAYHEM</div>
+          <div className="family-title">
+            Jarlath and Anya’s Times Table Turbo
+          </div>
           <h1>
             READY.
             <br />
@@ -648,7 +681,7 @@ export default function Home() {
           </div>
 
           <button type="button" className="primary-cta" onClick={startGame}>
-            START THE TURBO <span aria-hidden="true">→</span>
+            START SOLO TURBO <span aria-hidden="true">→</span>
           </button>
           <p className="touch-note">Big-button mode • made for tapping</p>
         </div>
@@ -748,6 +781,71 @@ export default function Home() {
             </div>
           </div>
         </aside>
+      </section>
+
+      <section className="together-section" aria-labelledby="together-title">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">TWO IPADS • ONE LIVE ROOM</span>
+            <h2 id="together-title">Play together</h2>
+          </div>
+          <span>Uses your selected tables: {tableLabel}</span>
+        </div>
+        <div className="together-grid">
+          <button
+            type="button"
+            className="mode-card race-card"
+            onClick={() => openMultiplayer({ kind: "host", mode: "race" })}
+          >
+            <span className="mode-icon" aria-hidden="true">
+              🏁
+            </span>
+            <span className="mode-copy">
+              <small>COMPETE LIVE</small>
+              <strong>Race Mode</strong>
+              <span>
+                Same clock, live scores. Fastest brain takes the trophy.
+              </span>
+            </span>
+            <b aria-hidden="true">→</b>
+          </button>
+          <button
+            type="button"
+            className="mode-card coop-card"
+            onClick={() => openMultiplayer({ kind: "host", mode: "coop" })}
+          >
+            <span className="mode-icon" aria-hidden="true">
+              🤝
+            </span>
+            <span className="mode-copy">
+              <small>WORK TOGETHER</small>
+              <strong>Team Turbo</strong>
+              <span>
+                Take turns, share hearts and build one monster score.
+              </span>
+            </span>
+            <b aria-hidden="true">→</b>
+          </button>
+          <button
+            type="button"
+            className="mode-card join-card"
+            onClick={() => openMultiplayer({ kind: "join" })}
+          >
+            <span className="mode-icon" aria-hidden="true">
+              🔑
+            </span>
+            <span className="mode-copy">
+              <small>GOT A CODE?</small>
+              <strong>Join Room</strong>
+              <span>Enter the five characters shown on the other iPad.</span>
+            </span>
+            <b aria-hidden="true">→</b>
+          </button>
+        </div>
+        <p className="live-note">
+          <span aria-hidden="true">●</span> Realtime play needs both iPads online.
+          Solo mode still works offline after the first visit.
+        </p>
       </section>
 
       <section className="awards-section">

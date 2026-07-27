@@ -1,7 +1,7 @@
 {
-  "name": "Times Table Turbo",
-  "short_name": "Table Turbo",
-  "description": "A 60-second times-tables challenge with combos and awards.",
+  "name": "Jarlath and Anya's Times Table Turbo",
+  "short_name": "J+A Turbo",
+  "description": "A touch-first times-tables game for solo and live two-player play.",
   "start_url": "./",
   "scope": "./",
   "display": "standalone",

@@ -23,21 +23,25 @@ async function render() {
   );
 }
 
-test("server-renders the finished Times Table Turbo product", async () => {
+test("server-renders Jarlath and Anya's Times Table Turbo", async () => {
   const response = await render();
   assert.equal(response.status, 200);
   assert.match(response.headers.get("content-type") ?? "", /^text\/html\b/i);
 
   const html = await response.text();
-  assert.match(html, /<title>Times Table Turbo/);
+  assert.match(html, /<title>Jarlath and Anya/);
   assert.match(html, /READY\./);
   assert.match(html, /Choose your tables/);
   assert.doesNotMatch(html, /codex-preview|Your site is taking shape/);
 });
 
-test("includes the touch game, install metadata and static Pages build", async () => {
-  const [page, css, manifest, sw, docsFiles] = await Promise.all([
+test("includes the touch game, live rooms, install metadata and Pages build", async () => {
+  const [page, multiplayer, core, firebase, css, manifest, sw, docsFiles] =
+    await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/MultiplayerGame.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/multiplayer-core.ts", import.meta.url), "utf8"),
+    readFile(new URL("../app/firebase.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
     readFile(new URL("../public/manifest.webmanifest", import.meta.url), "utf8"),
     readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
@@ -53,14 +57,27 @@ test("includes the touch game, install metadata and static Pages build", async (
   assert.match(page, /serviceWorker/);
   assert.match(page, /ROUND_SECONDS = 60/);
   assert.match(page, /Array\.from\(\{ length: 12 \}/);
+  assert.match(page, /Race Mode/);
+  assert.match(page, /Team Turbo/);
+  assert.match(page, /Join Room/);
+  assert.match(page, /MultiplayerGame/);
+  assert.match(multiplayer, /onValue/);
+  assert.match(multiplayer, /runTransaction/);
+  assert.match(multiplayer, /serverTimeOffset/);
+  assert.match(multiplayer, /No accounts or chat/);
+  assert.match(core, /MULTIPLAYER_SECONDS = 60/);
+  assert.match(core, /multiplayerQuestion/);
+  assert.match(firebase, /signInAnonymously/);
+  assert.match(firebase, /europe-west1\.firebasedatabase\.app/);
   assert.match(css, /touch-action:\s*manipulation/);
   assert.match(css, /env\(safe-area-inset/);
   assert.match(css, /\.number-pad button[\s\S]*min-height/);
 
   const parsedManifest = JSON.parse(manifest);
   assert.equal(parsedManifest.display, "standalone");
-  assert.equal(parsedManifest.name, "Times Table Turbo");
-  assert.match(sw, /CACHE_NAME = "times-table-turbo-v2"/);
+  assert.equal(parsedManifest.name, "Jarlath and Anya's Times Table Turbo");
+  assert.match(sw, /CACHE_NAME = "times-table-turbo-v3"/);
+  assert.match(sw, /requestUrl\.origin !== self\.location\.origin/);
   assert.ok(docsFiles.includes("index.html"));
   assert.ok(docsFiles.includes("manifest.webmanifest"));
   assert.ok(docsFiles.includes("og.png"));

@@ -1,6 +1,7 @@
-# Times Table Turbo
+# Jarlath and Anya’s Times Table Turbo
 
-A fast, touch-first times-tables game for children learning the 1–12 tables.
+A fast, touch-first times-tables game for Jarlath and Anya to practise the
+1–12 tables alone or together on their iPads.
 
 ## The game
 
@@ -9,11 +10,15 @@ A fast, touch-first times-tables game for children learning the 1–12 tables.
 - combo bonuses, time rewards and friendly consequences
 - six unlockable awards, stars and a device-local high score
 - optional arcade sound effects
+- live two-iPad Race mode with a shared countdown and realtime scores
+- turn-taking Team Turbo mode with shared hearts and a shared score
+- simple five-character room codes with no child accounts or chat
 - installable from Safari with **Add to Home Screen**
-- offline replay after the first visit
+- offline solo replay after the first visit
 
-Progress is stored only in the browser on the device. There are no accounts,
-ads or analytics.
+Solo progress is stored only in the browser on the device. Live rooms use
+anonymous Firebase sessions, expire after two hours and contain only gameplay
+state. There are no named accounts, ads, chat or analytics.
 
 ## Run locally
 
