@@ -38,6 +38,8 @@ test("server-renders Jarlath and Anya's Times Table Turbo", async () => {
 test("includes the touch game, live rooms, install metadata and Pages build", async () => {
   const [
     page,
+    factFamily,
+    factFamilyCore,
     multiplayer,
     corrections,
     core,
@@ -49,6 +51,8 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   ] =
     await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/FactFamilyFlight.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/fact-family-core.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/MultiplayerGame.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/CorrectionsReview.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/multiplayer-core.ts", import.meta.url), "utf8"),
@@ -72,6 +76,12 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.match(page, /Team Turbo/);
   assert.match(page, /Join Room/);
   assert.match(page, /MultiplayerGame/);
+  assert.match(page, /FactFamilyFlight/);
+  assert.match(page, /Fact Family Flight/);
+  assert.match(factFamily, /MAKE THE DIVISION CONNECTION/);
+  assert.match(factFamily, /Two multiplication facts\. Two division facts/);
+  assert.match(factFamilyCore, /createFactFamilyRound/);
+  assert.match(factFamilyCore, /divisionConnection/);
   assert.match(page, /recordMistake/);
   assert.match(page, /correctionsRequired/);
   assert.match(multiplayer, /onValue/);

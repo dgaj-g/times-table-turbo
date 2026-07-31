@@ -6,6 +6,7 @@ A fast, touch-first times-tables game for Jarlath and Anya to practise the
 ## The game
 
 - 60-second rounds with three hearts
+- separate Fact Family Flight mode connecting multiplication and division
 - large on-screen keypad for iPad and other touch devices
 - combo bonuses, time rewards and friendly consequences
 - six unlockable awards, stars and a device-local high score

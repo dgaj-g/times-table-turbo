@@ -36,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
     metadataBase: new URL(origin),
     title: "Jarlath and Anya’s Times Table Turbo",
     description:
-      "A touch-friendly times-tables game with solo, live Race and turn-taking Team Turbo modes.",
+      "A touch-friendly multiplication and division game with solo, fact-family and live two-player modes.",
     applicationName: "Jarlath and Anya’s Times Table Turbo",
     manifest: "/manifest.webmanifest",
     appleWebApp: {
@@ -51,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       url: origin,
       title: "Jarlath and Anya’s Times Table Turbo",
-      description: "Play solo, race live, or solve times tables together.",
+      description: "Master times tables, connect division facts, or play live together.",
       images: [
         {
           url: `${origin}/og.png`,
@@ -64,7 +64,7 @@ export async function generateMetadata(): Promise<Metadata> {
     twitter: {
       card: "summary_large_image",
       title: "Jarlath and Anya’s Times Table Turbo",
-      description: "Play solo, race live, or solve times tables together.",
+      description: "Master times tables, connect division facts, or play live together.",
       images: [`${origin}/og.png`],
     },
   };

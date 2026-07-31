@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import CorrectionsReview, {
   type MistakeRecord,
 } from "./CorrectionsReview";
+import FactFamilyFlight from "./FactFamilyFlight";
 import MultiplayerGame from "./MultiplayerGame";
 import type { MultiplayerMode } from "./multiplayer-core";
 import {
@@ -13,7 +14,7 @@ import {
   type QuestionSequence,
 } from "./question-sequence";
 
-type Screen = "home" | "playing" | "results" | "multiplayer";
+type Screen = "home" | "playing" | "results" | "multiplayer" | "families";
 type Feedback = "idle" | "correct" | "wrong";
 type SelectionMode = "multi" | "single";
 type MultiplayerEntry =
@@ -478,6 +479,18 @@ export default function Home() {
     );
   }
 
+  if (screen === "families") {
+    return (
+      <FactFamilyFlight
+        tables={selectedTables}
+        soundOn={soundOn}
+        onToggleSound={() => setSoundOn((current) => !current)}
+        onHome={() => setScreen("home")}
+        playSound={playSound}
+      />
+    );
+  }
+
   if (screen === "playing") {
     return (
       <main className={`game-shell feedback-${feedback}`}>
@@ -847,6 +860,40 @@ export default function Home() {
             </div>
           </div>
         </aside>
+      </section>
+
+      <section className="family-section" aria-labelledby="family-title">
+        <div className="section-heading">
+          <div>
+            <span className="eyebrow">MULTIPLY • DIVIDE • CONNECT</span>
+            <h2 id="family-title">Fact Family Flight</h2>
+          </div>
+          <span>Uses your selected tables: {tableLabel}</span>
+        </div>
+        <button
+          type="button"
+          className="family-launch-card"
+          onClick={() => {
+            setScreen("families");
+            playSound("start");
+          }}
+        >
+          <span className="family-launch-map" aria-hidden="true">
+            <span className="family-launch-product">12</span>
+            <span className="family-launch-a">2</span>
+            <span className="family-launch-b">6</span>
+          </span>
+          <span className="family-launch-copy">
+            <small>NEW SOLO ACTIVITY • NO TIMER</small>
+            <strong>Turn one multiplication fact into a whole number family</strong>
+            <span>
+              Connect 2 × 6 = 12 with 12 ÷ 6 = 2 and 12 ÷ 2 = 6.
+            </span>
+          </span>
+          <span className="family-launch-action">
+            START FLIGHT <b aria-hidden="true">→</b>
+          </span>
+        </button>
       </section>
 
       <section className="together-section" aria-labelledby="together-title">
