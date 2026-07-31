@@ -1,7 +1,10 @@
+import { createQuestionSequence, questionAt } from "./question-sequence";
+import type { Question } from "./question-sequence";
+
 export type PlayerName = "Jarlath" | "Anya";
 export type MultiplayerMode = "race" | "coop";
 export type RoomStatus = "waiting" | "playing" | "finished";
-export type Question = { a: number; b: number };
+export type { Question } from "./question-sequence";
 export type MistakeRecord = Question & { count: number };
 
 export type PlayerState = {
@@ -43,24 +46,12 @@ export const PLAYERS: PlayerName[] = ["Jarlath", "Anya"];
 export const MULTIPLAYER_SECONDS = 60;
 export const ROOM_LIFETIME_MS = 2 * 60 * 60 * 1000;
 
-function mixed(seed: number, index: number, salt: number) {
-  let value = (seed ^ Math.imul(index + 1, 0x45d9f3b) ^ salt) >>> 0;
-  value = Math.imul(value ^ (value >>> 16), 0x45d9f3b);
-  value = Math.imul(value ^ (value >>> 16), 0x45d9f3b);
-  return (value ^ (value >>> 16)) >>> 0;
-}
-
 export function multiplayerQuestion(
   seed: number,
   index: number,
   tables: number[],
 ): Question {
-  const safeTables = tables.length ? tables : [1];
-  const table = safeTables[mixed(seed, index, 17) % safeTables.length];
-  const multiplier = (mixed(seed, index, 41) % 12) + 1;
-  return mixed(seed, index, 73) % 2
-    ? { a: table, b: multiplier }
-    : { a: multiplier, b: table };
+  return questionAt(createQuestionSequence(tables, seed), index);
 }
 
 export function makeRoomCode() {

@@ -88,6 +88,8 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.match(corrections, /onComplete\(\)/);
   assert.match(core, /MULTIPLAYER_SECONDS = 60/);
   assert.match(core, /multiplayerQuestion/);
+  assert.match(core, /createQuestionSequence/);
+  assert.match(core, /questionAt/);
   assert.match(firebase, /signInAnonymously/);
   assert.match(firebase, /europe-west1\.firebasedatabase\.app/);
   assert.match(css, /touch-action:\s*manipulation/);

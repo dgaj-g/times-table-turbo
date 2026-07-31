@@ -6,11 +6,16 @@ import CorrectionsReview, {
 } from "./CorrectionsReview";
 import MultiplayerGame from "./MultiplayerGame";
 import type { MultiplayerMode } from "./multiplayer-core";
+import {
+  createQuestionSequence,
+  questionAt,
+  type Question,
+  type QuestionSequence,
+} from "./question-sequence";
 
 type Screen = "home" | "playing" | "results" | "multiplayer";
 type Feedback = "idle" | "correct" | "wrong";
 type SelectionMode = "multi" | "single";
-type Question = { a: number; b: number };
 type MultiplayerEntry =
   | { kind: "host"; mode: MultiplayerMode }
   | { kind: "join" };
@@ -70,21 +75,6 @@ const AWARDS = [
   },
 ];
 
-function makeQuestion(tables: number[], previous?: Question): Question {
-  let next: Question;
-  do {
-    const a = tables[Math.floor(Math.random() * tables.length)] ?? 1;
-    const b = Math.floor(Math.random() * 12) + 1;
-    next = Math.random() > 0.45 ? { a, b } : { a: b, b: a };
-  } while (
-    previous &&
-    next.a === previous.a &&
-    next.b === previous.b &&
-    tables.length > 1
-  );
-  return next;
-}
-
 function scoreStars(score: number) {
   if (score >= 3000) return 3;
   if (score >= 1700) return 2;
@@ -121,6 +111,8 @@ export default function Home() {
   const audioContext = useRef<AudioContext | null>(null);
   const roundActionTimer = useRef<number | null>(null);
   const finishing = useRef(false);
+  const questionSequence = useRef<QuestionSequence | null>(null);
+  const questionIndex = useRef(0);
 
   const accuracy = attempts ? Math.round((correctCount / attempts) * 100) : 0;
   const stars = scoreStars(score);
@@ -268,8 +260,11 @@ export default function Home() {
   function startGame() {
     clearRoundAction();
     finishing.current = false;
-    const firstQuestion = makeQuestion(selectedTables);
-    setQuestion(firstQuestion);
+    const seed = Math.floor(Math.random() * 0x100000000);
+    const sequence = createQuestionSequence(selectedTables, seed);
+    questionSequence.current = sequence;
+    questionIndex.current = 0;
+    setQuestion(questionAt(sequence, 0));
     questionStartedAt.current = Date.now();
     setAnswer("");
     setScore(0);
@@ -321,7 +316,10 @@ export default function Home() {
   }
 
   function nextQuestion() {
-    setQuestion((current) => makeQuestion(selectedTables, current));
+    if (questionSequence.current) {
+      questionIndex.current += 1;
+      setQuestion(questionAt(questionSequence.current, questionIndex.current));
+    }
     setAnswer("");
     setFeedback("idle");
     setMessage("Keep flying!");
