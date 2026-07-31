@@ -1,7 +1,7 @@
 # Jarlath and Anya’s Times Table Turbo
 
 A fast, touch-first times-tables game for Jarlath and Anya to practise the
-1–12 tables alone or together on their iPads.
+2–12 tables alone or together on their iPads.
 
 ## The game
 

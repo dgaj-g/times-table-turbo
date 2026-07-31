@@ -28,7 +28,7 @@ type SavedProgress = {
 };
 
 const ROUND_SECONDS = 60;
-const ALL_TABLES = Array.from({ length: 12 }, (_, index) => index + 1);
+const ALL_TABLES = Array.from({ length: 11 }, (_, index) => index + 2);
 const DEFAULT_PROGRESS: SavedProgress = {
   bestScore: 0,
   totalStars: 0,
@@ -117,8 +117,8 @@ export default function Home() {
   const accuracy = attempts ? Math.round((correctCount / attempts) * 100) : 0;
   const stars = scoreStars(score);
   const tableLabel =
-    selectedTables.length === 12
-      ? "All 1–12"
+    selectedTables.length === ALL_TABLES.length
+      ? "All 2–12"
       : selectedTables.length === 1
         ? `${selectedTables[0]} only`
       : selectedTables.slice().sort((a, b) => a - b).join(", ");
@@ -713,7 +713,7 @@ export default function Home() {
           </h1>
           <p>
             Race the clock, build monster combos and master every table from
-            1 to 12.
+            2 to 12.
           </p>
 
           <div className="best-strip">

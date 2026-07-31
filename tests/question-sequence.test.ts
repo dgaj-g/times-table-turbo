@@ -12,14 +12,16 @@ function key({ a, b }: Question) {
 
 test("single-table practice asks every fact before repeating", () => {
   const sequence = createQuestionSequence([7], 12345);
-  const firstPass = sequence.firstPass.map((_, index) => questionAt(sequence, index));
+  const firstPass = sequence.firstPass.map((_, index) =>
+    questionAt(sequence, index),
+  );
 
   assert.equal(firstPass.length, 12);
   assert.equal(new Set(firstPass.map(key)).size, 12);
   assert.equal(firstPass.filter(({ a, b }) => a === 1 || b === 1).length, 1);
 });
 
-test("times-one facts are not repeated later in a run", () => {
+test("only one times-one fact appears in an entire run", () => {
   const sequence = createQuestionSequence([3, 7], 67890);
   const questions = Array.from({ length: 100 }, (_, index) =>
     questionAt(sequence, index),
@@ -28,8 +30,8 @@ test("times-one facts are not repeated later in a run", () => {
     .filter(({ a, b }) => a === 1 || b === 1)
     .map(key);
 
-  assert.equal(timesOneKeys.length, 2);
-  assert.equal(new Set(timesOneKeys).size, 2);
+  assert.equal(timesOneKeys.length, 1);
+  assert.equal(new Set(timesOneKeys).size, 1);
   assert.ok(
     questions
       .slice(sequence.firstPass.length)
@@ -39,10 +41,12 @@ test("times-one facts are not repeated later in a run", () => {
 
 test("commuted questions count as the same fact", () => {
   const sequence = createQuestionSequence([3, 7], 24680);
-  const firstPass = sequence.firstPass.map((_, index) => questionAt(sequence, index));
+  const firstPass = sequence.firstPass.map((_, index) =>
+    questionAt(sequence, index),
+  );
 
-  assert.equal(firstPass.length, 23);
-  assert.equal(new Set(firstPass.map(key)).size, 23);
+  assert.equal(firstPass.length, 22);
+  assert.equal(new Set(firstPass.map(key)).size, 22);
 });
 
 test("a seeded sequence is deterministic", () => {

@@ -67,7 +67,7 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.match(page, /Touch|made for tapping/i);
   assert.match(page, /serviceWorker/);
   assert.match(page, /ROUND_SECONDS = 60/);
-  assert.match(page, /Array\.from\(\{ length: 12 \}/);
+  assert.match(page, /Array\.from\(\{ length: 11 \}/);
   assert.match(page, /Race Mode/);
   assert.match(page, /Team Turbo/);
   assert.match(page, /Join Room/);

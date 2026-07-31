@@ -39,17 +39,25 @@ export function createQuestionSequence(
   seed: number,
 ): QuestionSequence {
   const safeTables = Array.from(
-    new Set(tables.filter((table) => Number.isInteger(table) && table >= 1 && table <= 12)),
+    new Set(
+      tables.filter(
+        (table) => Number.isInteger(table) && table >= 2 && table <= 12,
+      ),
+    ),
   );
-  if (!safeTables.length) safeTables.push(1);
+  if (!safeTables.length) safeTables.push(2);
 
   const facts = new Map<string, Fact>();
   for (const table of safeTables) {
-    for (let multiplier = 1; multiplier <= 12; multiplier += 1) {
+    for (let multiplier = 2; multiplier <= 12; multiplier += 1) {
       const fact = canonicalFact(table, multiplier);
       facts.set(factKey(fact), fact);
     }
   }
+
+  const timesOneTable = safeTables[(seed >>> 0) % safeTables.length];
+  const timesOneFact = canonicalFact(1, timesOneTable);
+  facts.set(factKey(timesOneFact), timesOneFact);
 
   const firstPass = shuffle(Array.from(facts.values()), seed);
   const usefulFacts = firstPass.filter(([a, b]) => a !== 1 && b !== 1);
@@ -57,9 +65,8 @@ export function createQuestionSequence(
   return {
     seed: seed >>> 0,
     firstPass,
-    // Keep focus mode playable if the 1 table is selected on its own. In all
-    // other runs, ×1 facts disappear after they have each appeared once.
-    repeatPass: usefulFacts.length ? usefulFacts : firstPass,
+    // One randomly chosen ×1 fact can appear in the first pass only.
+    repeatPass: usefulFacts,
   };
 }
 
@@ -77,6 +84,8 @@ export function questionAt(
   const [a, b] = fact;
 
   if (a === b) return { a, b };
-  const orientation = nextRandom(sequence.seed ^ Math.imul(safeIndex + 1, 0x45d9f3b));
+  const orientation = nextRandom(
+    sequence.seed ^ Math.imul(safeIndex + 1, 0x45d9f3b),
+  );
   return orientation % 2 ? { a, b } : { a: b, b: a };
 }
