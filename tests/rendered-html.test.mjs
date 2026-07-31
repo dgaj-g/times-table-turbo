@@ -99,8 +99,11 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   const parsedManifest = JSON.parse(manifest);
   assert.equal(parsedManifest.display, "standalone");
   assert.equal(parsedManifest.name, "Jarlath and Anya's Times Table Turbo");
-  assert.match(sw, /CACHE_NAME = "times-table-turbo-v5"/);
+  assert.match(sw, /CACHE_NAME = "times-table-turbo-v6"/);
+  assert.match(sw, /networkFirst/);
   assert.match(sw, /requestUrl\.origin !== self\.location\.origin/);
+  assert.match(page, /updateViaCache: "none"/);
+  assert.match(page, /controllerchange/);
   assert.ok(docsFiles.includes("index.html"));
   assert.ok(docsFiles.includes("manifest.webmanifest"));
   assert.ok(docsFiles.includes("og.png"));

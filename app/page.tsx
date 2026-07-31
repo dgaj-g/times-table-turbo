@@ -140,9 +140,28 @@ export default function Home() {
 
     if ("serviceWorker" in navigator) {
       const serviceWorkerPath = new URL("sw.js", window.location.href).pathname;
+      let refreshing = false;
+      const refreshForUpdate = () => {
+        if (refreshing) return;
+        refreshing = true;
+        window.location.reload();
+      };
+
+      navigator.serviceWorker.addEventListener(
+        "controllerchange",
+        refreshForUpdate,
+      );
       navigator.serviceWorker
-        .register(serviceWorkerPath)
+        .register(serviceWorkerPath, { updateViaCache: "none" })
+        .then((registration) => registration.update())
         .catch(() => undefined);
+
+      return () => {
+        navigator.serviceWorker.removeEventListener(
+          "controllerchange",
+          refreshForUpdate,
+        );
+      };
     }
   }, []);
 
