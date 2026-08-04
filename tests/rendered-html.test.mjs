@@ -48,6 +48,10 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
     manifest,
     sw,
     docsFiles,
+    docsAssetFiles,
+    docsManifest,
+    docsServiceWorker,
+    docsIndex,
   ] =
     await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
@@ -61,6 +65,10 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
     readFile(new URL("../public/manifest.webmanifest", import.meta.url), "utf8"),
     readFile(new URL("../public/sw.js", import.meta.url), "utf8"),
     readdir(new URL("../docs/", import.meta.url)),
+    readdir(new URL("../docs/assets/", import.meta.url)),
+    readFile(new URL("../docs/manifest.webmanifest", import.meta.url), "utf8"),
+    readFile(new URL("../docs/sw.js", import.meta.url), "utf8"),
+    readFile(new URL("../docs/index.html", import.meta.url), "utf8"),
   ]);
 
   assert.match(page, /aria-label="Answer keypad"/);
@@ -117,4 +125,17 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.ok(docsFiles.includes("index.html"));
   assert.ok(docsFiles.includes("manifest.webmanifest"));
   assert.ok(docsFiles.includes("og.png"));
+  assert.equal(docsManifest, manifest);
+  assert.equal(docsServiceWorker, sw);
+  assert.match(docsIndex, /multiplication and division game/);
+
+  const pagesBundles = await Promise.all(
+    docsAssetFiles
+      .filter((file) => file.endsWith(".js"))
+      .map((file) =>
+        readFile(new URL(`../docs/assets/${file}`, import.meta.url), "utf8"),
+      ),
+  );
+  assert.match(pagesBundles.join("\n"), /Fact Family Flight/);
+  assert.match(pagesBundles.join("\n"), /MAKE THE DIVISION CONNECTION/);
 });
