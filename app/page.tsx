@@ -30,6 +30,7 @@ type SavedProgress = {
 };
 
 const ROUND_SECONDS = 60;
+const APP_VERSION = 8;
 const ALL_TABLES = Array.from({ length: 11 }, (_, index) => index + 2);
 const DEFAULT_PROGRESS: SavedProgress = {
   bestScore: 0,
@@ -733,6 +734,10 @@ export default function Home() {
             START SOLO TURBO <span aria-hidden="true">→</span>
           </button>
           <p className="touch-note">Big-button mode • made for tapping</p>
+          <p className="release-badge" aria-label="Current app version">
+            VERSION {APP_VERSION} <span aria-hidden="true">•</span> KEYPAD
+            ACCURACY FIX
+          </p>
         </div>
 
         <aside className="mission-panel">

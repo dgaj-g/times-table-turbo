@@ -85,6 +85,8 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.match(page, /Touch|made for tapping/i);
   assert.match(page, /serviceWorker/);
   assert.match(page, /ROUND_SECONDS = 60/);
+  assert.match(page, /APP_VERSION = 8/);
+  assert.match(page, /KEYPAD\s*ACCURACY FIX/);
   assert.match(page, /Array\.from\(\{ length: 11 \}/);
   assert.match(page, /Race Mode/);
   assert.match(page, /Team Turbo/);
@@ -125,7 +127,7 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   const parsedManifest = JSON.parse(manifest);
   assert.equal(parsedManifest.display, "standalone");
   assert.equal(parsedManifest.name, "Jarlath and Anya's Times Table Turbo");
-  assert.match(sw, /CACHE_NAME = "times-table-turbo-v7"/);
+  assert.match(sw, /CACHE_NAME = "times-table-turbo-v8"/);
   assert.match(sw, /networkFirst/);
   assert.match(sw, /requestUrl\.origin !== self\.location\.origin/);
   assert.match(page, /updateViaCache: "none"/);

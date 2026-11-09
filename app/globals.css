@@ -280,6 +280,27 @@ button.wordmark:disabled,
   font-size: 0.76rem;
 }
 
+.release-badge {
+  display: inline-flex;
+  min-height: 34px;
+  align-items: center;
+  gap: 8px;
+  margin: 12px 0 0;
+  padding: 0 12px;
+  border: 1px solid rgba(32, 214, 231, 0.45);
+  border-radius: 999px;
+  background: rgba(32, 214, 231, 0.1);
+  color: var(--cyan);
+  font-family: var(--font-geist-mono), monospace;
+  font-size: 0.67rem;
+  font-weight: 950;
+  letter-spacing: 0.04em;
+}
+
+.release-badge span {
+  color: var(--yellow);
+}
+
 .mission-panel {
   position: relative;
   padding: clamp(24px, 4vw, 34px);
