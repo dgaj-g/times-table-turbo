@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import NumberPad from "./NumberPad";
 
 export type MistakeRecord = {
   a: number;
@@ -179,40 +180,15 @@ export default function CorrectionsReview({
           </button>
         </div>
       ) : (
-        <div
-          className="number-pad correction-pad"
-          aria-label="Correction answer keypad"
-        >
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
-            <button
-              key={digit}
-              type="button"
-              onClick={() => enterDigit(digit)}
-              aria-label={digit}
-            >
-              {digit}
-            </button>
-          ))}
-          <button
-            type="button"
-            className="delete-key"
-            onClick={eraseDigit}
-            aria-label="Delete last digit"
-          >
-            ⌫
-          </button>
-          <button type="button" onClick={() => enterDigit("0")} aria-label="0">
-            0
-          </button>
-          <button
-            type="button"
-            className="go-key"
-            onClick={checkAnswer}
-            disabled={!answer}
-          >
-            CHECK
-          </button>
-        </div>
+        <NumberPad
+          className="correction-pad"
+          ariaLabel="Correction answer keypad"
+          onDigit={enterDigit}
+          onDelete={eraseDigit}
+          onSubmit={checkAnswer}
+          submitDisabled={!answer}
+          submitLabel="CHECK"
+        />
       )}
     </section>
   );

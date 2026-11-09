@@ -38,6 +38,7 @@ test("server-renders Jarlath and Anya's Times Table Turbo", async () => {
 test("includes the touch game, live rooms, install metadata and Pages build", async () => {
   const [
     page,
+    numberPad,
     factFamily,
     factFamilyCore,
     multiplayer,
@@ -55,6 +56,7 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   ] =
     await Promise.all([
     readFile(new URL("../app/page.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/NumberPad.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/FactFamilyFlight.tsx", import.meta.url), "utf8"),
     readFile(new URL("../app/fact-family-core.ts", import.meta.url), "utf8"),
     readFile(new URL("../app/MultiplayerGame.tsx", import.meta.url), "utf8"),
@@ -71,7 +73,11 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
     readFile(new URL("../docs/index.html", import.meta.url), "utf8"),
   ]);
 
-  assert.match(page, /aria-label="Answer keypad"/);
+  assert.match(numberPad, /ariaLabel = "Answer keypad"/);
+  assert.match(numberPad, /setPointerCapture/);
+  assert.match(numberPad, /pointerEndedInsideKey/);
+  assert.match(numberPad, /onPointerUp/);
+  assert.match(numberPad, /suppressClickUntil/);
   assert.match(page, /FOCUS ONE/);
   assert.match(page, /selectionMode === "single"/);
   assert.match(page, /End this round and return to the home screen/);
@@ -113,11 +119,13 @@ test("includes the touch game, live rooms, install metadata and Pages build", as
   assert.match(css, /touch-action:\s*manipulation/);
   assert.match(css, /env\(safe-area-inset/);
   assert.match(css, /\.number-pad button[\s\S]*min-height/);
+  assert.match(css, /\.number-pad button[\s\S]*touch-action:\s*none/);
+  assert.match(css, /\.number-pad button\.keypad-pressed/);
 
   const parsedManifest = JSON.parse(manifest);
   assert.equal(parsedManifest.display, "standalone");
   assert.equal(parsedManifest.name, "Jarlath and Anya's Times Table Turbo");
-  assert.match(sw, /CACHE_NAME = "times-table-turbo-v6"/);
+  assert.match(sw, /CACHE_NAME = "times-table-turbo-v7"/);
   assert.match(sw, /networkFirst/);
   assert.match(sw, /requestUrl\.origin !== self\.location\.origin/);
   assert.match(page, /updateViaCache: "none"/);

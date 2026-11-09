@@ -1,4 +1,4 @@
-const CACHE_NAME = "times-table-turbo-v6";
+const CACHE_NAME = "times-table-turbo-v7";
 const SCOPE = self.registration.scope;
 const APP_SHELL = [SCOPE, `${SCOPE}manifest.webmanifest`, `${SCOPE}og.png`];
 

@@ -1432,10 +1432,12 @@ footer {
 .number-pad {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  gap: 9px;
+  gap: 12px;
 }
 
 .number-pad button {
+  position: relative;
+  isolation: isolate;
   min-height: clamp(60px, 8.5vh, 78px);
   cursor: pointer;
   border: 1px solid rgba(255, 255, 255, 0.2);
@@ -1446,10 +1448,18 @@ footer {
   font-family: var(--font-geist-mono), monospace;
   font-size: clamp(1.35rem, 4vw, 1.9rem);
   font-weight: 950;
+  touch-action: none;
+  -webkit-touch-callout: none;
 }
 
-.number-pad button:not(:disabled):active {
-  transform: translateY(4px);
+.number-pad button > span {
+  pointer-events: none;
+}
+
+.number-pad button:not(:disabled):active,
+.number-pad button.keypad-pressed {
+  border-color: var(--cyan);
+  background: #303a68;
   box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.2);
 }
 
@@ -1467,6 +1477,12 @@ footer {
   background: var(--yellow);
   box-shadow: inset 0 -5px 0 #b98900;
   color: var(--ink);
+}
+
+.number-pad .go-key:not(:disabled):active,
+.number-pad .go-key.keypad-pressed {
+  border-color: var(--cream);
+  background: #ffe171;
 }
 
 /* Results */
@@ -2319,7 +2335,7 @@ footer {
   }
 
   .number-pad {
-    gap: 7px;
+    gap: 10px;
   }
 
   .number-pad button {

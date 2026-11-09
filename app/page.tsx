@@ -6,6 +6,7 @@ import CorrectionsReview, {
 } from "./CorrectionsReview";
 import FactFamilyFlight from "./FactFamilyFlight";
 import MultiplayerGame from "./MultiplayerGame";
+import NumberPad from "./NumberPad";
 import type { MultiplayerMode } from "./multiplayer-core";
 import {
   createQuestionSequence,
@@ -563,44 +564,13 @@ export default function Home() {
             </div>
           </div>
 
-          <div className="number-pad" aria-label="Answer keypad">
-            {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
-              <button
-                key={digit}
-                type="button"
-                onClick={() => enterDigit(digit)}
-                disabled={locked}
-                aria-label={digit}
-              >
-                {digit}
-              </button>
-            ))}
-            <button
-              type="button"
-              className="delete-key"
-              onClick={eraseDigit}
-              disabled={locked}
-              aria-label="Delete last digit"
-            >
-              ⌫
-            </button>
-            <button
-              type="button"
-              onClick={() => enterDigit("0")}
-              disabled={locked}
-              aria-label="0"
-            >
-              0
-            </button>
-            <button
-              type="button"
-              className="go-key"
-              onClick={submitAnswer}
-              disabled={locked || !answer}
-            >
-              GO
-            </button>
-          </div>
+          <NumberPad
+            onDigit={enterDigit}
+            onDelete={eraseDigit}
+            onSubmit={submitAnswer}
+            disabled={locked}
+            submitDisabled={!answer}
+          />
         </section>
       </main>
     );

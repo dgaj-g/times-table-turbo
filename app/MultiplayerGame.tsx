@@ -12,6 +12,7 @@ import {
   update,
 } from "firebase/database";
 import CorrectionsReview from "./CorrectionsReview";
+import NumberPad from "./NumberPad";
 import { getRealtimeServices } from "./firebase";
 import {
   makeRoomCode,
@@ -807,44 +808,13 @@ export default function MultiplayerGame({
           </div>
         )}
 
-        <div className="number-pad" aria-label="Answer keypad">
-          {["1", "2", "3", "4", "5", "6", "7", "8", "9"].map((digit) => (
-            <button
-              key={digit}
-              type="button"
-              onClick={() => enterDigit(digit)}
-              disabled={gameLocked}
-              aria-label={digit}
-            >
-              {digit}
-            </button>
-          ))}
-          <button
-            type="button"
-            className="delete-key"
-            onClick={eraseDigit}
-            disabled={gameLocked}
-            aria-label="Delete last digit"
-          >
-            ⌫
-          </button>
-          <button
-            type="button"
-            onClick={() => enterDigit("0")}
-            disabled={gameLocked}
-            aria-label="0"
-          >
-            0
-          </button>
-          <button
-            type="button"
-            className="go-key"
-            onClick={submitAnswer}
-            disabled={gameLocked || !answer}
-          >
-            GO
-          </button>
-        </div>
+        <NumberPad
+          onDigit={enterDigit}
+          onDelete={eraseDigit}
+          onSubmit={submitAnswer}
+          disabled={gameLocked}
+          submitDisabled={!answer}
+        />
         {error && <div className="room-error compact-error">{error}</div>}
       </section>
     </main>
